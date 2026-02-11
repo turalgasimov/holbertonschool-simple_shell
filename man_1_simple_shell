@@ -1,0 +1,39 @@
+.TH hsh 1 "February 2026" "1.0" "Simple Shell Manual"
+.SH NAME
+hsh - simple UNIX command interpreter
+
+.SH SYNOPSIS
+.B hsh
+.RI [ command ]
+
+.SH DESCRIPTION
+hsh is a simple UNIX command language interpreter written in C.
+
+It reads commands from standard input and executes them.
+The shell works in both interactive and non-interactive modes.
+
+In interactive mode, hsh displays a prompt and waits for user input.
+
+In non-interactive mode, hsh reads commands from standard input without displaying a prompt.
+
+.SH INVOCATION
+The shell can be invoked in the following ways:
+
+Interactive mode:
+.RS
+./hsh
+.RE
+
+Non-interactive mode:
+.RS
+echo "/bin/ls" | ./hsh
+.RE
+
+.SH ENVIRONMENT
+hsh uses the PATH environment variable to locate executable files.
+
+.SH EXIT STATUS
+hsh returns the exit status of the last executed command.
+
+.SH AUTHORS
+Tural Gasimov
