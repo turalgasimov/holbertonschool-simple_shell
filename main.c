@@ -3,9 +3,9 @@
 /**
  * main - entry point
  * 
- *
+ * Return: 0
 */
-int main()
+int main(void)
 {
-    return 0;
+	return (0);
 }
