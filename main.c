@@ -1,18 +1,6 @@
 #include "shell.h"
 
 /**
- * display_prompt - Prints the shell prompt if stdin is a terminal
- * @is_tty: Non-zero if stdin is a terminal, zero otherwise
- *
- * Return: void
- */
-void display_prompt(int is_tty)
-{
-	if (is_tty)
-		write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
-}
-
-/**
  * read_line - Reads one line from stdin byte by byte using read()
  * @line: Pointer to buffer pointer (allocated with malloc, caller must free)
  *
@@ -86,35 +74,66 @@ void strip_whitespace(char *str)
 }
 
 /**
- * execute_command - Forks and executes the given command using execve
- * @cmd: The command (full path) to execute
+ * execute_command - Forks and executes command with arguments
+ * @argv: Array of arguments (argv[0] is command)
  *
- * Return: Exit status of the child process, or -1 on fork failure
+ * Return: Exit status of child process, or -1 on failure
  */
-int execute_command(char *cmd)
+int execute_command(char **argv)
 {
 	pid_t pid;
 	int status;
-	char *argv[2];
 
-	argv[0] = cmd;
-	argv[1] = NULL;
 	pid = fork();
 	if (pid == -1)
 	{
 		perror("fork");
 		return (-1);
 	}
+
 	if (pid == 0)
 	{
-		if (execve(cmd, argv, environ) == -1)
+		if (execve(argv[0], argv, environ) == -1)
 		{
-			fprintf(stderr, "./shell: No such file or directory\n");
+			fprintf(stderr,
+				"./shell: No such file or directory\n");
 			exit(EXIT_FAILURE);
 		}
 	}
+
 	waitpid(pid, &status, 0);
 	return (status);
+}
+
+/**
+ * tokenize - splits input into arguments
+ * @line: input string
+ *
+ * Return: array of arguments
+ */
+char **tokenize(char *line)
+{
+	char **argv;
+	char *token;
+	int i;
+
+	argv = malloc(sizeof(char *) * 64);
+	if (argv == NULL)
+		return (NULL);
+
+	token = strtok(line, " ");
+	i = 0;
+
+	while (token != NULL)
+	{
+		argv[i] = token;
+		i++;
+		token = strtok(NULL, " ");
+	}
+
+	argv[i] = NULL;
+
+	return (argv);
 }
 
 /**
@@ -124,10 +143,11 @@ int execute_command(char *cmd)
  */
 int	main(void)
 {
-	char	*line;
+	char *line;
 	ssize_t	nread;
-	int	is_tty;
-	int	status;
+	int is_tty;
+	int status;
+	char **argv;
 
 	is_tty = isatty(STDIN_FILENO);
 	while (1)
@@ -145,8 +165,13 @@ int	main(void)
 		strip_whitespace(line);
 		if (line[0] != '\0')
 		{
-			status = execute_command(line);
-			(void)status;
+			argv = tokenize(line);
+			if (argv != NULL)
+			{
+				status = execute_command(argv);
+				free(argv);
+				(void)status;
+			}
 		}
 		free(line);
 	}

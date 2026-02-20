@@ -17,5 +17,18 @@ void display_prompt(int is_tty);
 ssize_t read_line(char **line);
 void strip_whitespace(char *str);
 int execute_command(char *cmd);
+char **tokenize(char *line);
+
+/**
+ * display_prompt - Prints the shell prompt if stdin is a terminal
+ * @is_tty: Non-zero if stdin is a terminal, zero otherwise
+ *
+ * Return: void
+ */
+void display_prompt(int is_tty)
+{
+	if (is_tty)
+		write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
+}
 
 #endif
