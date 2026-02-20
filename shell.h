@@ -16,7 +16,7 @@ extern char **environ;
 void display_prompt(int is_tty);
 ssize_t read_line(char **line);
 void strip_whitespace(char *str);
-int execute_command(char *cmd);
+int execute_command(char **argv);
 char **tokenize(char *line);
 
 /**
