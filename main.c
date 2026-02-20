@@ -49,23 +49,39 @@ ssize_t	read_line(char **line)
 }
 
 /**
- * strip_newline - Strips trailing whitespace (spaces, tabs, \r, \n)
- *                from a string in place
+ * strip_whitespace - Strips trailing/leadingc whitespace
+ * (spaces, tabs, \r, \n)
+ * from a string in place
  * @str: The string to modify
  *
  * Return: void
  */
-void strip_newline(char *str)
+void strip_whitespace(char *str)
 {
-	int len;
+	int start = 0;
+	int end = strlen(str) - 1;
+	int i;
 
-	len = strlen(str);
-	while (len > 0 &&
-		(str[len - 1] == '\n' || str[len - 1] == '\r' ||
-		str[len - 1] == ' '  || str[len - 1] == '\t'))
+	/* Trim leading spaces */
+	while (str[start] == ' ' || str[start] == '\t')
+		start++;
+
+	/* Trim trailing spaces/newlines */
+	while (end >= start &&
+		(str[end] == '\n' || str[end] == '\r' ||
+		str[end] == ' '  || str[end] == '\t'))
 	{
-		str[len - 1] = '\0';
-		len--;
+		str[end] = '\0';
+		end--;
+	}
+
+	/* Shift string left if needed */
+	if (start > 0)
+	{
+		i = 0;
+		while (str[start])
+			str[i++] = str[start++];
+		str[i] = '\0';
 	}
 }
 
@@ -91,7 +107,6 @@ int execute_command(char *cmd)
 	}
 	if (pid == 0)
 	{
-		close(STDIN_FILENO);
 		if (execve(cmd, argv, environ) == -1)
 		{
 			fprintf(stderr, "./shell: No such file or directory\n");
