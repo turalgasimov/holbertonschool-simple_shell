@@ -142,7 +142,7 @@ int	main(void)
 			free(line);
 			break;
 		}
-		strip_newline(line);
+		strip_whitespace(line);
 		if (line[0] != '\0')
 		{
 			status = execute_command(line);
