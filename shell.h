@@ -14,7 +14,7 @@
 extern char **environ;
 
 void display_prompt(int is_tty);
-char *read_command(char **line, size_t *len);
+char *read_line(char **line);
 void strip_newline(char *str);
 int execute_command(char *cmd);
 
