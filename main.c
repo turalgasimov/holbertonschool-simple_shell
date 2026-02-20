@@ -149,11 +149,18 @@ int main(void)
 			argv = tokenize(line);
 			if (argv != NULL)
 			{
+				/* Handle built-in exit */
+				if (strcmp(argv[0], "exit") == 0)
+				{
+					free(argv);
+					free(line);
+					break;
+				}
 				status = execute_command(argv);
 				free(argv);
 			}
 		}
 		free(line);
 	}
-	return (status); /* Return last command status */
+	return (status);
 }
