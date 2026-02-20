@@ -18,6 +18,7 @@ ssize_t read_line(char **line);
 void strip_whitespace(char *str);
 int execute_command(char **argv);
 char **tokenize(char *line);
+char *get_path_from_environ(void);
 char *find_command_in_path(char *cmd);
 
 /**
@@ -70,6 +71,28 @@ void strip_whitespace(char *str)
 }
 
 /**
+ * get_path_from_environ - returns a pointer to the PATH string from environ
+ *
+ * Return: pointer to PATH string, or NULL if not found
+ */
+char *get_path_from_environ(void)
+{
+	int i;
+	size_t len;
+
+	if (!environ)
+		return (NULL);
+
+	for (i = 0; environ[i]; i++)
+	{
+		len = strlen("PATH=");
+		if (strncmp(environ[i], "PATH=", len) == 0)
+			return (environ[i] + len);
+	}
+	return (NULL);
+}
+
+/**
  * find_command_in_path - searches PATH for the executable
  * @cmd: command name (e.g., "ls")
  *
@@ -83,7 +106,7 @@ char *find_command_in_path(char *cmd)
 	if (!cmd || strchr(cmd, '/'))
 		return (NULL); /* Already a path, don't search PATH */
 
-	path_env = getenv("PATH");
+	path_env = get_path_from_environ();
 	if (!path_env)
 		return (NULL);
 
@@ -98,13 +121,13 @@ char *find_command_in_path(char *cmd)
 		if (access(full_path, X_OK) == 0)
 		{
 			free(path_dup);
-			return (strdup(full_path)); /* Found executable */
+			return (strdup(full_path));
 		}
 		dir = strtok(NULL, ":");
 	}
 
 	free(path_dup);
-	return (NULL); /* Not found */
+	return (NULL);
 }
 
 #endif
