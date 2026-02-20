@@ -7,7 +7,7 @@
 int main(void)
 {
 	char *line = NULL;
-	char *argv[];
+	char *argv[2];
 	size_t len = 0;
 	ssize_t read;
 	pid_t pid;
@@ -35,7 +35,7 @@ int main(void)
 		}
 		if (pid == 0)
 		{
-			argv = {line, NULL}
+			argv = {line, NULL};
 			execve(line, argv, environ);
 			perror("./hsh");
 			exit(1);
