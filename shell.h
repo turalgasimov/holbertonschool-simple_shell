@@ -48,18 +48,24 @@ char	*read_command(char **line, size_t *len)
 }
 
 /**
- * strip_newline - Replaces the first newline in a string with a null byte
+ * strip_newline - Strips trailing whitespace (spaces, tabs, \r, \n)
+ *                from a string in place
  * @str: The string to modify
  *
  * Return: void
  */
-void strip_newline(char *str)
+void	strip_newline(char *str)
 {
-	char *newline;
+	int len;
 
-	newline = strchr(str, '\n');
-	if (newline)
-		*newline = '\0';
+	len = strlen(str);
+	while (len > 0 &&
+		(str[len - 1] == '\n' || str[len - 1] == '\r' ||
+		str[len - 1] == ' '  || str[len - 1] == '\t'))
+	{
+		str[len - 1] = '\0';
+		len--;
+	}
 }
 
 /**
