@@ -113,26 +113,28 @@ int execute_command(char **argv)
  */
 char **tokenize(char *line)
 {
-	char **argv;
+	char **argv = NULL;
 	char *token;
-	int i;
+	int size = 8, i = 0;
 
-	argv = malloc(sizeof(char *) * 64);
-	if (argv == NULL)
+	argv = malloc(sizeof(char *) * size);
+	if (!argv)
 		return (NULL);
 
 	token = strtok(line, " ");
-	i = 0;
-
 	while (token != NULL)
 	{
-		argv[i] = token;
-		i++;
+		if (i >= size - 1)
+		{
+			size *= 2;
+			argv = realloc(argv, sizeof(char *) * size);
+			if (!argv)
+				return (NULL);
+		}
+		argv[i++] = token;
 		token = strtok(NULL, " ");
 	}
-
 	argv[i] = NULL;
-
 	return (argv);
 }
 
