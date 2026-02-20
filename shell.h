@@ -20,6 +20,7 @@ int execute_command(char **argv);
 char **tokenize(char *line);
 char *get_path_from_environ(void);
 char *find_command_in_path(char *cmd);
+int handle_builtin(char **argv, char *line);
 
 /**
  * display_prompt - Prints the shell prompt if stdin is a terminal
@@ -128,6 +129,35 @@ char *find_command_in_path(char *cmd)
 
 	free(path_dup);
 	return (NULL);
+}
+
+/**
+ * handle_builtin - Handles built-in commands like exit and env
+ * @argv: Command tokens
+ * @line: Current input line
+ *
+ * Return: 1 if a built-in was executed, 0 otherwise
+ */
+int handle_builtin(char **argv, char *line)
+{
+	int i;
+
+	if (strcmp(argv[0], "exit") == 0)
+	{
+		free(argv);
+		free(line);
+		exit(0);
+	}
+	if (strcmp(argv[0], "env") == 0)
+	{
+		for (i = 0; environ[i]; i++)
+		write(STDOUT_FILENO, environ[i], strlen(environ[i])),
+		write(STDOUT_FILENO, "\n", 1);
+		free(argv);
+		free(line);
+		return (1);
+	}
+	return (0);
 }
 
 #endif

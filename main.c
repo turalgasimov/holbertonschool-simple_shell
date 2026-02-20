@@ -126,7 +126,7 @@ int main(void)
 {
 	char *line;
 	ssize_t nread;
-	int is_tty;
+	int is_tty, i;
 	int status = 0;
 	char **argv;
 
@@ -149,13 +149,10 @@ int main(void)
 			argv = tokenize(line);
 			if (argv != NULL)
 			{
-				/* Handle built-in exit */
-				if (strcmp(argv[0], "exit") == 0)
-				{
-					free(argv);
-					free(line);
-					break;
-				}
+				/* Handle built-in exit/env*/
+				if (handle_builtin(argv, line))
+					continue;
+
 				status = execute_command(argv);
 				free(argv);
 			}
