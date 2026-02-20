@@ -7,6 +7,7 @@
 int main(void)
 {
 	char *line = NULL;
+	char *argv[2];
 	size_t len = 0;
 	ssize_t read;
 	pid_t pid;
@@ -17,7 +18,6 @@ int main(void)
 		printf("($) ");
 		fflush(stdout);
 		read = getline(&line, &len, stdin);
-		/* Handle EOF (Ctrl+D) */
 		if (read == -1)
 		{
 			printf("\n");
@@ -34,7 +34,8 @@ int main(void)
 		}
 		if (pid == 0)
 		{
-			char *argv[] = {line, NULL};
+			argv[0] = line;
+			argv[1] = NULL;
 			execve(line, argv, environ);
 			perror("./hsh");
 			exit(1);
