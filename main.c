@@ -126,7 +126,7 @@ int main(void)
 {
 	char *line;
 	ssize_t nread;
-	int is_tty, i;
+	int is_tty;
 	int status = 0;
 	char **argv;
 
