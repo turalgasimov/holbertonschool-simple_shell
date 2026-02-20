@@ -72,6 +72,7 @@ int execute_command(char *cmd)
 	}
 	if (pid == 0)
 	{
+		close(STDIN_FILENO);
 		if (execve(cmd, argv, environ) == -1)
 		{
 			fprintf(stderr, "./shell: No such file or directory\n");
