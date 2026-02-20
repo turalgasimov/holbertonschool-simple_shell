@@ -14,7 +14,7 @@
 extern char **environ;
 
 void display_prompt(int is_tty);
-char *read_command(char *buf, int size);
+char *read_command(char **line, size_t *len);
 void strip_newline(char *str);
 int execute_command(char *cmd);
 
@@ -31,15 +31,20 @@ void display_prompt(int is_tty)
 }
 
 /**
- * read_command - Reads a line of input from stdin into a buffer
- * @buf: Buffer to store the input
- * @size: Size of the buffer
+ * read_command - Reads a line of input from stdin using getline
+ * @line: Address of the buffer pointer (allocated/reallocated by getline)
+ * @len: Address of the buffer size variable
  *
- * Return: Pointer to buf on success, NULL on EOF or error
+ * Return: Pointer to the line buffer on success, NULL on EOF or error
  */
-char *read_command(char *buf, int size)
+char	*read_command(char **line, size_t *len)
 {
-	return (fgets(buf, size, stdin));
+	ssize_t	nread;
+
+	nread = getline(line, len, stdin);
+	if (nread == -1)
+		return (NULL);
+	return (*line);
 }
 
 /**
