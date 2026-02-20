@@ -37,43 +37,6 @@ ssize_t	read_line(char **line)
 }
 
 /**
- * strip_whitespace - Strips trailing/leadingc whitespace
- * (spaces, tabs, \r, \n)
- * from a string in place
- * @str: The string to modify
- *
- * Return: void
- */
-void strip_whitespace(char *str)
-{
-	int start = 0;
-	int end = strlen(str) - 1;
-	int i;
-
-	/* Trim leading spaces */
-	while (str[start] == ' ' || str[start] == '\t')
-		start++;
-
-	/* Trim trailing spaces/newlines */
-	while (end >= start &&
-		(str[end] == '\n' || str[end] == '\r' ||
-		str[end] == ' '  || str[end] == '\t'))
-	{
-		str[end] = '\0';
-		end--;
-	}
-
-	/* Shift string left if needed */
-	if (start > 0)
-	{
-		i = 0;
-		while (str[start])
-			str[i++] = str[start++];
-		str[i] = '\0';
-	}
-}
-
-/**
  * execute_command - Forks and executes command with arguments
  * @argv: Array of arguments (argv[0] is command)
  *
@@ -83,25 +46,42 @@ int execute_command(char **argv)
 {
 	pid_t pid;
 	int status;
+	char *cmd_path;
+
+	if (!argv[0])
+		return (-1);
+
+	/* If command has / use as is, otherwise search PATH */
+	if (strchr(argv[0], '/'))
+		cmd_path = strdup(argv[0]);
+	else
+		cmd_path = find_command_in_path(argv[0]);
+
+	if (!cmd_path)
+	{
+		fprintf(stderr, "./shell: %s: No such file or directory\n", argv[0]);
+		return (-1); /* Do NOT fork */
+	}
 
 	pid = fork();
 	if (pid == -1)
 	{
 		perror("fork");
+		free(cmd_path);
 		return (-1);
 	}
 
 	if (pid == 0)
 	{
-		if (execve(argv[0], argv, environ) == -1)
+		if (execve(cmd_path, argv, environ) == -1)
 		{
-			fprintf(stderr,
-				"./shell: No such file or directory\n");
+			perror("./shell");
 			exit(EXIT_FAILURE);
 		}
 	}
 
 	waitpid(pid, &status, 0);
+	free(cmd_path);
 	return (status);
 }
 
