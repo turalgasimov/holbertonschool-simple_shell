@@ -120,14 +120,14 @@ char **tokenize(char *line)
 /**
  * main - Entry point for the simple shell
  *
- * Return: Always 0
+ * Return: status
  */
-int	main(void)
+int main(void)
 {
 	char *line;
-	ssize_t	nread;
+	ssize_t nread;
 	int is_tty;
-	int status;
+	int status = 0;
 	char **argv;
 
 	is_tty = isatty(STDIN_FILENO);
@@ -151,10 +151,9 @@ int	main(void)
 			{
 				status = execute_command(argv);
 				free(argv);
-				(void)status;
 			}
 		}
 		free(line);
 	}
-	return (0);
+	return (status); /* Return last command status */
 }
