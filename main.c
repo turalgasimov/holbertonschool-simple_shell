@@ -49,9 +49,8 @@ int execute_command(char **argv)
 	char *cmd_path;
 
 	if (!argv[0])
-		return (-1);
+		return (127);
 
-	/* If command has / use as is, otherwise search PATH */
 	if (strchr(argv[0], '/'))
 		cmd_path = strdup(argv[0]);
 	else
@@ -59,30 +58,30 @@ int execute_command(char **argv)
 
 	if (!cmd_path)
 	{
-		fprintf(stderr, "./shell: %s: No such file or directory\n", argv[0]);
-		return (-1); /* Do NOT fork */
+		fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+		return (127);
 	}
 
 	pid = fork();
 	if (pid == -1)
 	{
-		perror("fork");
+		perror("./hsh");
 		free(cmd_path);
-		return (-1);
+		return (127);
 	}
 
 	if (pid == 0)
 	{
 		if (execve(cmd_path, argv, environ) == -1)
 		{
-			perror("./shell");
-			exit(EXIT_FAILURE);
+		perror("./hsh");
+		exit(127);
 		}
 	}
 
 	waitpid(pid, &status, 0);
 	free(cmd_path);
-	return (status);
+	return (WIFEXITED(status) ? WEXITSTATUS(status) : 127);
 }
 
 /**
