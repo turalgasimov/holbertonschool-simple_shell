@@ -1,49 +1,33 @@
 #include "shell.h"
 
 /**
- * main - simple shell
+ * main - Entry point for the simple shell
+ *
  * Return: Always 0
  */
 int main(void)
 {
-	char *line = NULL;
-	char *argv[2];
-	size_t len = 0;
-	ssize_t read;
-	pid_t pid;
+	char buf[BUFSIZE];
+	char *line;
+	int is_tty;
 	int status;
 
+	is_tty = isatty(STDIN_FILENO);
 	while (1)
 	{
-		printf("($) ");
-		fflush(stdout);
-		read = getline(&line, &len, stdin);
-		if (read == -1)
+		display_prompt(is_tty);
+		line = read_command(buf, BUFSIZE);
+		if (line == NULL)
 		{
-			printf("\n");
-			free(line);
-			exit(0);
+			if (is_tty)
+				write(STDOUT_FILENO, "\n", 1);
+			break;
 		}
-		line[read - 1] = '\0';
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("Error");
-			free(line);
-			exit(1);
-		}
-		if (pid == 0)
-		{
-			argv[0] = line;
-			argv[1] = NULL;
-			execve(line, argv, environ);
-			perror("./hsh");
-			exit(1);
-		} else
-		{
-			wait(&status);
-		}
+		strip_newline(buf);
+		if (buf[0] == '\0')
+			continue;
+		status = execute_command(buf);
+		(void)status;
 	}
-	free(line);
 	return (0);
 }
