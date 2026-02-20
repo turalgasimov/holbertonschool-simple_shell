@@ -43,11 +43,7 @@ char	*read_command(char **line, size_t *len)
 
 	nread = getline(line, len, stdin);
 	if (nread == -1)
-	{
-		if (*line != NULL && (*line)[0] != '\0')
-			return (*line);
 		return (NULL);
-	}
 	return (*line);
 }
 
